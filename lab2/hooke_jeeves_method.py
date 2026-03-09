@@ -27,13 +27,17 @@ def minimize_with_hook_jeeves_method(
             if curr_z < z_new:
                 last_x = curr_x
                 last_z = curr_z
+                k+=1
 
             else:
                 last_x = x_new
                 last_z = z_new
+                k+=1
 
         else:
             step_vector *= step_reduction
+            k+=1
+
 
     return last_x
 
