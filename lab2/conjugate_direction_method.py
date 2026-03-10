@@ -1,50 +1,49 @@
+import numpy
 import numpy as np
 from typing import Callable
 
-from fontTools.misc.cython import returns
-from pygments.unistring import xid_start
 from scipy.optimize import minimize_scalar
+
 
 def minimize_with_conjugate_direction_method(
         func: Callable[[np.ndarray], float],
         x0: np.ndarray,
         eps: float = 1e-3
 ):
-    k = 0
+
     n = len(x0)
-    last_x = x0.copy()
-
+    start_x = x0.copy()
+    direction_vectors = numpy.eye(n)
+    k = 0
     while True:
-        s_k = np.zeros(n)
-        s_k[0] = 1
-        lamb_func = lambda l: func(last_x + l * s_k)
-        l = minimize_scalar(lamb_func).x
-        x_new = last_x + l * s_k
-        last_x = x_new
+        curr_x = start_x.copy()
+        decreases_of_func = np.zeros(n)
+        for i in range(n):
+            lambda_func = lambda l: func(curr_x + l*direction_vectors[i])
+            l_min = minimize_scalar(lambda_func).x
+            func_before_direction = func(curr_x)
 
-        for i in range(1,n):
-            e_k = np.zeros(n)
-            e_k[i] = 1
+            curr_x += l_min*direction_vectors[i]
+            decreases_of_func[i] = func_before_direction - func(curr_x)
 
-            y_prev = last_x + e_k
-            y_k = y_prev.copy()
-            for j in range(i + 1):
-                s_j = np.zeros(n)
-                s_j[j] = 1
-                lamb_func = lambda l: func(y_k + l * s_j)
-                l = minimize_scalar(lamb_func).x
-                y_k += l * s_j
+        minimize_direction = curr_x - start_x
 
-            s_k = y_k - y_prev
+        if np.linalg.norm(minimize_direction) < eps:
+            return curr_x
 
-            lamb_func = lambda l: func(last_x + l*s_k)
-            l = minimize_scalar(lamb_func).x
-            x_next = last_x + l*s_k
-            curr_x = x_next
+        idx_of_max_decrease = np.argmax(decreases_of_func)
 
-            if np.linalg.norm(curr_x - last_x) < eps:
-                return curr_x
+        direction_vectors[idx_of_max_decrease] = minimize_direction / np.linalg.norm(minimize_direction)
 
-            k += 1
+        start_x = curr_x.copy()
 
 
+
+
+def rosenbrock(x):
+    return (1 - x[0])**2 + 100 * (x[1] - x[0]**2)**2
+
+x0 = np.array([-1.2, 1.0])
+result = minimize_with_conjugate_direction_method(rosenbrock, x0, eps=1e-6)
+print("Найденная точка:", result)
+print("f(x) =", rosenbrock(result))
