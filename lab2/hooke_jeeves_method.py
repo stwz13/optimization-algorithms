@@ -102,4 +102,6 @@ x_opt = minimize_with_hook_jeeves_method(
     eps=1e-2,
 )
 
-print(x_opt)
+print(f"x_opt = {x_opt}")
+
+print(f"f_opt = {function(x_opt)}")

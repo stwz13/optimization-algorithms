@@ -40,10 +40,33 @@ def minimize_with_conjugate_direction_method(
 
 
 
-def rosenbrock(x):
-    return (1 - x[0])**2 + 100 * (x[1] - x[0]**2)**2
+A = 10
+a = 2
+b = 3
+c = 1
+d = 1
+r = -1
 
-x0 = np.array([-1.2, 1.0])
-result = minimize_with_conjugate_direction_method(rosenbrock, x0, eps=1e-6)
-print("Найденная точка:", result)
-print("f(x) =", rosenbrock(result))
+def function(x):
+    x1, x2 = x[0], x[1]
+    exponent = - (1 / (10 - r**2)) * (
+        (x1 - a)**2 / c**2 -
+        2 * r * (x1 - a) * (x2 - b) / (c * d) +
+        (x2 - b)**2 / d**2
+    )
+    return A - np.exp(exponent)
+
+
+x0 = np.array([0.0, 0.0])
+
+step_vector = np.array([0.5, 0.5])
+
+x_opt = minimize_with_conjugate_direction_method(
+    func=function,
+    x0=x0,
+    eps=1e-2,
+)
+
+print(f"x_opt = {x_opt}")
+
+print(f"f_opt = {function(x_opt)}")
