@@ -1,7 +1,6 @@
 from typing import Callable
 import numpy as np
-from scipy.optimize import minimize_scalar, minimize
-from sympy.codegen.rewriting import powm1_opt
+from scipy.optimize import minimize_scalar
 
 
 def minimize_with_rosenbrok_method(func: Callable[[np.ndarray], float],
