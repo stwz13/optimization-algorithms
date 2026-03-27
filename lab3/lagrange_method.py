@@ -20,7 +20,7 @@ def lagrange_method(func, constraint, variables):
 
 
 x1, x2 = sp.symbols("x1 x2")
-func = x1- x2
+func = x1 - x2
 constraint = 1.5*x1**2 + x2**2 - 3
 
 opt_solution = lagrange_method(func, constraint, [x1, x2])
