@@ -1,8 +1,4 @@
 import sympy as sp
-from typing import Callable
-import numpy as np
-
-
 
 def lagrange_method(func, constraint, variables):
 
